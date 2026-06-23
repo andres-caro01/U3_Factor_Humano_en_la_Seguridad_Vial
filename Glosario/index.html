@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glosario de Tecnología y Seguridad Vial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIABLES DE COLOR --- */
+        :root {
+            --primary-brand: #27728F;
+            --bg-light: #ececec;
+            --text-dark: #333333;
+            --white: #ffffff;
+            --disabled-gray: #a0a0a0;
+            --disabled-bg: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
+            background-size: 10px 10px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .glossary-widget {
+            width: 100%;
+            max-width: 900px;
+            background: transparent;
+            position: relative; 
+        }
+
+        .instruction-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .instruction-badge {
+            background-color: var(--primary-brand);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse-attention 2s infinite;
+        }
+
+        @keyframes pulse-attention {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 114, 143, 0.4); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(39, 114, 143, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 114, 143, 0); }
+        }
+
+        .glossary-header {
+            background-color: var(--primary-brand);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .glossary-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .glossary-body {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start; 
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-direction: column;
+            width: 140px;
+            flex-shrink: 0;
+            background-color: var(--primary-brand);
+            border-radius: 15px;
+            padding: 10px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px; 
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--white);
+            border: none;
+            padding: 15px 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            outline: none;
+            position: relative;
+        }
+
+        .tab-btn:hover:not(.disabled) {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-light);
+            color: var(--primary-brand);
+            border-radius: 5px 0 0 5px;
+        }
+
+        .tab-btn.disabled {
+            color: var(--disabled-gray);
+            background-color: rgba(0, 0, 0, 0.15);
+            cursor: not-allowed;
+        }
+
+        .tab-btn.disabled::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 105%;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #333333;
+            color: var(--white);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .tab-btn.disabled::before {
+            content: '';
+            position: absolute;
+            left: 101%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent #333333 transparent transparent;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 10;
+        }
+
+        .tab-btn.disabled:hover::after,
+        .tab-btn.disabled:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .content-area {
+            flex-grow: 1;
+            background-color: var(--bg-light);
+            border-radius: 15px;
+            padding: 40px;
+            min-height: 450px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .definition-item {
+            margin-bottom: 30px;
+            padding-left: 20px;
+            border-left: 5px solid var(--primary-brand);
+        }
+
+        .definition-item h3 {
+            color: var(--primary-brand);
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .definition-item p {
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            text-align: left;
+        }
+
+        .hidden { display: none; }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in .definition-item {
+            animation: slideUpFade 0.5s ease-out forwards;
+            opacity: 0; 
+        }
+
+        .animate-in .definition-item:nth-child(n) { animation-delay: 0.1s; }
+
+        @media (max-width: 768px) {
+            .glossary-body { flex-direction: column; }
+            .tabs-container { width: 100%; flex-direction: row; position: static; }
+            .tab-btn { flex: 1; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+            .tab-btn.active { border-radius: 10px 10px 0 0; }
+            .tab-btn.disabled::after { left: 50%; top: auto; bottom: 115%; transform: translateX(-50%); }
+            .tab-btn.disabled::before { left: 50%; top: auto; bottom: 105%; transform: translateX(-50%); border-color: #333333 transparent transparent transparent; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="glossary-widget">
+    <div class="instruction-wrapper">
+        <div class="instruction-badge">
+            <span>👆</span> Haga Clic sobre los botones para ampliar la información
+        </div>
+    </div>
+
+    <div class="glossary-header">
+        <h1>Glosario de la unidad</h1>
+    </div>
+
+    <div class="glossary-body">
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="filterContent('A-I', this)">A – I</button>
+            <button class="tab-btn" onclick="filterContent('J-Q', this)">J – Q</button>
+            <button class="tab-btn" onclick="filterContent('R-Z', this)">R – Z</button>
+        </div>
+
+        <div class="content-area">
+            <div class="content-group animate-in" id="group-A-I">
+                <div class="definition-item">
+                    <h3>ADAS (Advanced Driver Assistance Systems)</h3>
+                    <p>Sistemas avanzados de asistencia al conductor que utilizan tecnologías como sensores, cámaras y algoritmos para mejorar la seguridad y comodidad durante la conducción, mediante funciones como frenado automático de emergencia y control de crucero adaptativo.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Análisis Predictivo</h3>
+                    <p>Método basado en técnicas estadísticas y de aprendizaje automático para identificar patrones y prever eventos futuros, como riesgos viales o accidentes.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Atención Dividida</h3>
+                    <p>Fenómeno cognitivo que ocurre cuando una persona intenta realizar múltiples tareas simultáneamente, reduciendo la eficacia en todas ellas.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Automatización Frágil</h3>
+                    <p>Fenómeno en el que los usuarios confían excesivamente en sistemas automatizados, reduciendo su atención activa y aumentando los riesgos en situaciones críticas.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Big Data</h3>
+                    <p>Conjunto masivo de datos recopilados y analizados para identificar patrones y tomar decisiones informadas en tiempo real.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Carga Cognitiva</h3>
+                    <p>Esfuerzo mental requerido para procesar información y tomar decisiones, especialmente en contextos de alta presión como la conducción.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Carriles Exclusivos</h3>
+                    <p>Espacios delimitados en la infraestructura vial destinados a un tipo específico de usuario, como ciclistas o motociclistas, diseñados para reducir riesgos y mejorar la seguridad.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Conciencia Situacional</h3>
+                    <p>Capacidad de percibir, comprender y anticipar lo que ocurre en el entorno para tomar decisiones informadas, especialmente relevante en la conducción.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Distracción Cognitiva</h3>
+                    <p>Pérdida de atención hacia la tarea principal debido a la concentración en pensamientos o actividades secundarias no relacionadas.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Distracción Manual</h3>
+                    <p>Situación en la que el conductor retira una o ambas manos del volante para realizar una tarea secundaria, afectando el control del vehículo.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Distracción Visual</h3>
+                    <p>Desviación de la mirada de la carretera hacia otras fuentes de información, como pantallas o dispositivos, comprometiendo la atención en el entorno vial.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Ilusión de Velocidad Angular</h3>
+                    <p>Error perceptivo que lleva a subestimar la velocidad de objetos pequeños, como motocicletas, en comparación con vehículos más grandes.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Infraestructura Inteligente</h3>
+                    <p>Infraestructura vial equipada con tecnología avanzada como sensores y sistemas de comunicación para optimizar el tráfico y mejorar la seguridad vial.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Intersección Inteligente</h3>
+                    <p>Cruce vial equipado con sistemas adaptativos que priorizan el paso seguro de peatones, ciclistas y vehículos mediante sensores y semáforos sincronizados.</p>
+                </div>
+            </div>
+
+            <div class="content-group hidden" id="group-J-Q">
+                <div class="definition-item">
+                    <h3>LIDAR</h3>
+                    <p>Tecnología de detección y rango por luz que utiliza láseres para medir distancias y crear mapas tridimensionales del entorno.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Modelos Predictivos</h3>
+                    <p>Algoritmos que analizan datos históricos y actuales para anticipar eventos futuros, como congestiones o accidentes viales.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Motociclistas</h3>
+                    <p>Actores viales que conducen vehículos de dos ruedas a motor, considerados vulnerables debido a su exposición directa y menor visibilidad en el tráfico.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Puntos Ciegos</h3>
+                    <p>Áreas alrededor de un vehículo que no son visibles para el conductor, lo que incrementa el riesgo de accidentes, especialmente en maniobras como cambios de carril.</p>
+                </div>
+            </div>
+
+            <div class="content-group hidden" id="group-R-Z">
+                <div class="definition-item">
+                    <h3>Recursos Atencionales</h3>
+                    <p>Concepto de la psicología que describe la capacidad limitada del cerebro para procesar información y realizar tareas simultáneamente.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Semáforos Adaptativos</h3>
+                    <p>Dispositivos inteligentes que ajustan su sincronización en tiempo real según las condiciones del tráfico detectadas por sensores.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Sistema de Comunicación Vehículo-Infraestructura (V2I)</h3>
+                    <p>Tecnología que permite la comunicación entre vehículos y la infraestructura vial para optimizar el tráfico y prevenir accidentes.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Usabilidad</h3>
+                    <p>Característica de un sistema o dispositivo que mide su facilidad de uso, eficiencia y satisfacción del usuario.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Vehículos Autónomos</h3>
+                    <p>Vehículos que operan mediante inteligencia artificial y sensores avanzados, eliminando la necesidad de intervención humana en ciertas condiciones.</p>
+                </div>
+                <div class="definition-item">
+                    <h3>Vigilancia Situacional</h3>
+                    <p>Capacidad de monitorear de manera continua el entorno para identificar y responder adecuadamente a los riesgos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterContent(groupId, btnElement) {
+        if (btnElement.classList.contains('disabled')) return;
+
+        const groups = document.querySelectorAll('.content-group');
+        groups.forEach(group => {
+            group.classList.add('hidden');
+            group.classList.remove('animate-in');
+        });
+
+        const selectedGroup = document.getElementById('group-' + groupId);
+        if (selectedGroup) {
+            selectedGroup.classList.remove('hidden');
+            void selectedGroup.offsetWidth; 
+            selectedGroup.classList.add('animate-in');
+        }
+
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
