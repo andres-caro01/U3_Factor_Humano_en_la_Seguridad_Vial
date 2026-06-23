@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Data y Seguridad Vial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --btn-1-glow: rgba(99, 102, 241, 0.15);
+            --btn-2-glow: rgba(236, 72, 153, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+            color: var(--text-main);
+        }
+
+        /* Instrucción flotante con animación sutil */
+        .floating-instruction {
+            position: fixed;
+            top: 2rem;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: float 3s ease-in-out infinite;
+            z-index: 10;
+            text-align: left;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Contenedor interactivo */
+        .dashboard-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 5rem;
+        }
+
+        /* Estructura del botón / tarjeta expansible */
+        .interactive-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            text-align: left;
+            position: relative;
+        }
+
+        /* Variaciones de color y sombras dinámicas al pasar el mouse */
+        .card-1:hover {
+            background: rgba(99, 102, 241, 0.05);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 40px var(--btn-1-glow);
+            transform: translateY(-2px);
+        }
+
+        .card-2:hover {
+            background: rgba(236, 72, 153, 0.05);
+            border-color: rgba(236, 72, 153, 0.4);
+            box-shadow: 0 20px 40px var(--btn-2-glow);
+            transform: translateY(-2px);
+        }
+
+        /* Encabezado del botón (lo que siempre se ve) */
+        .card-trigger {
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .card-title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .card-1 .card-number { color: #818cf8; }
+        .card-2 .card-number { color: #f472b6; }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Icono indicador animado */
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .action-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            transition: transform 0.5s;
+        }
+
+        .card-1 .action-icon { color: #818cf8; }
+        .card-2 .action-icon { color: #f472b6; }
+
+        /* Contenedor de la información oculta */
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            padding: 0 2rem;
+        }
+
+        /* Texto interior */
+        .info-text {
+            padding-bottom: 2.5rem;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--text-muted);
+            font-weight: 300;
+            text-align: left;
+        }
+
+        /* ESTADO ACTIVO (Cuando se hace clic) */
+        .interactive-card.is-expanded {
+            cursor: default;
+        }
+
+        .card-1.is-expanded {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: #6366f1;
+            box-shadow: 0 30px 60px rgba(99, 102, 241, 0.2);
+        }
+
+        .card-2.is-expanded {
+            background: rgba(236, 72, 153, 0.08);
+            border-color: #ec4899;
+            box-shadow: 0 30px 60px rgba(236, 72, 153, 0.2);
+        }
+
+        .interactive-card.is-expanded .action-icon {
+            transform: rotate(180deg);
+            background: currentColor;
+            color: #0f172a;
+        }
+
+        .interactive-card.is-expanded .card-content {
+            /* Permite la expansión suave basada en el contenido dinámico */
+            max-height: 1000px; 
+        }
+
+        .interactive-card.is-expanded .info-text {
+            color: var(--text-main);
+        }
+
+        /* Responsivo básico */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card-trigger { padding: 1.5rem; }
+            .card-content { padding: 0 1.5rem; }
+            .card-title { font-size: 1.15rem; }
+            .floating-instruction { font-size: 0.8rem; width: 90%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="floating-instruction">
+        👉 Haga clic sobre los botones para ampliar la información
+    </div>
+
+    <div class="dashboard-container">
+
+        <div class="interactive-card card-1" onclick="toggleCard(this)">
+            <div class="card-trigger">
+                <div class="card-title-block">
+                    <span class="card-number">Módulo 01</span>
+                    <h2 class="card-title">Enfoque Teórico y Analítica Predictiva</h2>
+                </div>
+                <div class="action-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="info-text">
+                    Desde el punto de vista teórico, el uso de Big Data en la seguridad vial se fundamenta en la analítica predictiva, una metodología que utiliza técnicas estadísticas, algoritmos avanzados y aprendizaje automático para identificar riesgos potenciales antes de que se conviertan en eventos críticos (Bertsimas & Dunn, 2017). Este enfoque va más allá de la simple observación de datos históricos, ya que tiene la capacidad de predecir eventos futuros basándose en el comportamiento observado y las condiciones actuales. Por ejemplo, los modelos predictivos pueden analizar datos meteorológicos, flujos de tráfico y comportamientos de los conductores para anticipar el riesgo de accidentes en carreteras específicas durante horas pico o en condiciones climáticas adversas.
+                </div>
+            </div>
+        </div>
+
+        <div class="interactive-card card-2" onclick="toggleCard(this)">
+            <div class="card-trigger">
+                <div class="card-title-block">
+                    <span class="card-number">Módulo 02</span>
+                    <h2 class="card-title">Optimización de Infraestructura Urbana</h2>
+                </div>
+                <div class="action-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="info-text">
+                    Uno de los avances más significativos del Big Data en la seguridad vial es su capacidad para optimizar la infraestructura urbana. Por ejemplo, las ciudades inteligentes están implementando sistemas de semáforos adaptativos que ajustan su sincronización en tiempo real según los volúmenes de tráfico detectados, lo que reduce significativamente la congestión y las posibilidades de colisiones en intersecciones críticas (Hussain, et al., 2020). Estas soluciones también incluyen la integración de datos provenientes de aplicaciones d
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleCard(cardElement) {
+            // Verifica si la tarjeta clickeada ya está expandida
+            const isExpanded = cardElement.classList.contains('is-expanded');
+            
+            // Cierra todas las tarjetas para mantener el diseño limpio e個personalizado
+            document.querySelectorAll('.interactive-card').forEach(card => {
+                card.classList.remove('is-expanded');
+            });
+
+            // Si no estaba expandida, la expande
+            if (!isExpanded) {
+                cardElement.classList.add('is-expanded');
+            }
+        }
+    </script>
+</body>
+</html>
