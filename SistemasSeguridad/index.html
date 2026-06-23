@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguridad Vial en Motocicletas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Paleta de azul oscuro profundo y vibrante */
+      --bg-main: #060814;
+      --bg-gradient: linear-gradient(135deg, #060814 0%, #0b112c 50%, #050716 100%);
+      --card-bg: rgba(15, 23, 42, 0.6);
+      --card-border: rgba(99, 102, 241, 0.15);
+      --card-hover-border: rgba(129, 140, 248, 0.6);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #4f46e5;
+      --accent-glow: rgba(79, 70, 229, 0.4);
+      --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2.5rem 1.5rem;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      text-align: center;
+    }
+
+    header {
+      margin-bottom: 4rem;
+      animation: dropDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.04em;
+    }
+
+    .instruction {
+      font-size: 0.95rem;
+      color: #a5b4fc;
+      background: rgba(79, 70, 229, 0.12);
+      padding: 0.6rem 1.5rem;
+      border-radius: 100px;
+      display: inline-block;
+      border: 1px solid rgba(79, 70, 229, 0.25);
+      letter-spacing: 0.03em;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Grid Horizontal de 4 Tarjetas */
+    .cards-horizontal-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      width: 100%;
+      perspective: 1000px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 2.5rem 1.75rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      min-height: 280px;
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+      animation: popInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Animación secuencial (Staggered) */
+    .card:nth-child(1) { animation-delay: 0.15s; }
+    .card:nth-child(2) { animation-delay: 0.30s; }
+    .card:nth-child(3) { animation-delay: 0.45s; }
+    .card:nth-child(4) { animation-delay: 0.60s; }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%);
+      opacity: 0;
+      transition: var(--transition-smooth);
+      z-index: 0;
+    }
+
+    .card:hover {
+      transform: translateY(-12px) scale(1.02);
+      border-color: var(--card-hover-border);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 35px var(--accent-glow);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      font-size: 1.6rem;
+      transition: var(--transition-smooth);
+      z-index: 1;
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.05);
+    }
+
+    .card:hover .card-icon {
+      background: #f43f5e; /* Un toque coral/rosa vibrante para destacar en el hover */
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.5);
+      border-color: transparent;
+    }
+    
+    /* Cambiar colores de iconos por tarjeta en el hover de forma individual si se prefiere */
+    .card:nth-child(2):hover .card-icon { background: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+    .card:nth-child(3):hover .card-icon { background: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+    .card:nth-child(4):hover .card-icon { background: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+
+    .card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+      z-index: 1;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+    }
+
+    /* Ventana Emergente (Modal Premium) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 5, 14, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 2rem;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-wrapper {
+      background: #0d122b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 32px;
+      padding: 3.5rem;
+      max-width: 750px;
+      width: 100%;
+      position: relative;
+      transform: scale(0.85) cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: var(--transition-smooth);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-overlay.active .modal-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.75rem;
+      right: 1.75rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      transform: rotate(90deg) scale(1.05);
+    }
+
+    .modal-header-tag {
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+      color: #ffffff;
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .modal-body {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: #cbd5e1;
+    }
+
+    /* Keyframes de Animaciones */
+    @keyframes dropDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popInUp {
+      from { opacity: 0; transform: translateY(50px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Ajustes Adaptativos (Responsive) */
+    @media (max-width: 1100px) {
+      .cards-horizontal-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem; }
+      h1 { font-size: 2rem; }
+      .cards-horizontal-grid {
+        grid-template-columns: 1fr;
+      }
+      .card { min-height: auto; padding: 2rem 1.5rem; }
+      .modal-wrapper { padding: 2.5rem 1.5rem; border-radius: 24px; }
+      .modal-title { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Seguridad y Tecnología en Motocicletas</h1>
+      <p class="instruction">Haga clic sobre las tarjetas para ampliar la información</p>
+    </header>
+
+    <div class="cards-horizontal-grid">
+      <div class="card" onclick="openModal('seguridad')" role="button" tabindex="0">
+        <div class="card-icon">🛡️</div>
+        <h2>Avances en Seguridad</h2>
+      </div>
+
+      <div class="card" onclick="openModal('riesgos')" role="button" tabindex="0">
+        <div class="card-icon">⚠️</div>
+        <h2>Riesgos Tecnológicos</h2>
+      </div>
+
+      <div class="card" onclick="openModal('educacion')" role="button" tabindex="0">
+        <div class="card-icon">📚</div>
+        <h2>Educación e Intervención</h2>
+      </div>
+
+      <div class="card" onclick="openModal('infraestructura')" role="button" tabindex="0">
+        <div class="card-icon">🛣️</div>
+        <h2>Diseño de Infraestructura</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal-wrapper" id="modalWrapper" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="closeModal()" aria-label="Cerrar ventana">&times;</button>
+      <div id="modalTag" class="modal-header-tag">Innovación Vial</div>
+      <h2 class="modal-title" id="modalTitle">Título de la Ventana</h2>
+      <div class="modal-body" id="modalBody">
+        Contenido estructurado...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Inyección estricta y completa de los textos facilitados
+    const contentData = {
+      seguridad: {
+        tag: "Tecnología Activa",
+        title: "Avances en los sistemas de seguridad",
+        text: "En términos de tecnología, los avances en los sistemas de seguridad para motocicletas han comenzado a abordar algunos de estos desafíos. Los sistemas de frenos ABS para motocicletas, por ejemplo, han demostrado reducir significativamente las colisiones relacionadas con frenadas de emergencia (Teoh, 2011). Además, las tecnologías de detección de puntos ciegos, que utilizan sensores de radar y cámaras, están comenzando a ser adaptadas para motocicletas. Estas tecnologías emiten alertas visuales, auditivas o táctiles que advierten al conductor sobre la presencia de vehículos en zonas de baja visibilidad, reduciendo el riesgo de colisiones durante maniobras como cambios de carril."
+      },
+      riesgos: {
+        tag: "Carga Cognitiva",
+        title: "Riesgos específicos y atención",
+        text: "Sin embargo, el uso de tecnologías como GPS y sistemas de asistencia también plantea riesgos específicos para los motociclistas. Estas tecnologías, aunque útiles para la navegación y la planificación de rutas, pueden generar distracción, ya que requieren que el conductor desvíe su atención de la carretera. (Wickens, et al., 2013) explican que la carga cognitiva y la atención dividida son factores críticos en estas situaciones, y su impacto es aún mayor en motociclistas debido a las demandas físicas y mentales adicionales que implica la conducción en dos ruedas."
+      },
+      educacion: {
+        tag: "Mitigación Humana",
+        title: "Educación vial y conducción defensiva",
+        text: "La tecnología por sí sola no es suficiente para abordar los riesgos inherentes a la conducción de motocicletas. La educación vial juega un papel crucial en la mitigación de estos riesgos. Es esencial que los conductores de vehículos más grandes reciban formación sobre cómo identificar motociclistas en el tráfico y cómo evitar maniobras peligrosas en zonas de puntos ciegos. Por otro lado, los motociclistas deben ser entrenados en técnicas de conducción defensiva que incluyan estrategias para minimizar su tiempo en áreas de baja visibilidad y para anticipar los errores de otros usuarios de la vía, donde en revisión de accidentes por violación de derecho de vía, se identificó que la gran mayoría de colisiones entre motocicletas y otros vehículos ocurren porque el conductor del otro vehículo no detecta al motociclista o subestima su velocidad, lo que señala directamente dos líneas de intervención educativa complementarias. (Pai, 2011)"
+      },
+      infraestructura: {
+        tag: "Entorno Vial",
+        title: "Diseño de infraestructura fundamental",
+        text: "El diseño de infraestructura también es fundamental para mejorar la seguridad de los motociclistas. Carriles exclusivos para motocicletas, superficies viales diseñadas para maximizar el agarre y señalización adecuada en intersecciones pueden reducir significativamente los riesgos. Además, la instalación de sistemas de iluminación y señalización inteligente, que alerten a los conductores sobre la presencia de motocicletas en zonas críticas, complementa los esfuerzos tecnológicos y educativos para crear un entorno vial más seguro para todos los usuarios."
+      }
+    };
+
+    const overlay = document.getElementById('modalOverlay');
+    const modalTag = document.getElementById('modalTag');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+
+    function openModal(key) {
+      const data = contentData[key];
+      if (!data) return;
+
+      modalTag.innerText = data.tag;
+      modalTitle.innerText = data.title;
+      modalBody.innerText = data.text;
+      
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('modalWrapper').focus();
+    }
+
+    function closeModal() {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(event) {
+      if (event.target === overlay) {
+        closeModal();
+      }
+    }
+
+    // Cierre interactivo mediante teclado (Escape, Espacio, Enter)
+    document.addEventListener('keydown', function(event) {
+      if (overlay.classList.contains('active')) {
+        if (event.key === 'Escape' || event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          closeModal();
+        }
+      }
+    });
+
+    // Accesibilidad por teclado para las tarjetas
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
