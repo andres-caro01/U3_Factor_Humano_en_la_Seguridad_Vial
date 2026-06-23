@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Data y Seguridad Vial</title>
+    <!-- Importación de Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos Base - Estilo Apple Dark */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #000000; /* Negro puro de Apple */
+            color: #f5f5f7; /* Blanco roto */
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Encabezado Centrado Estilo Apple Hero */
+        .intro-header {
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .intro-header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        /* Instrucción Flotante Fija (Siempre visible) */
+        .floating-instruction {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background: rgba(22, 22, 23, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .floating-instruction span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: #a1a1a6;
+            text-transform: uppercase;
+        }
+
+        /* Icono del Mouse de Apple con Animación de Rueda */
+        .mouse-icon {
+            width: 22px;
+            height: 36px;
+            border: 2px solid #ffffff;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .mouse-wheel {
+            width: 4px;
+            height: 8px;
+            background-color: #10b981; /* Verde menta analítico / Big Data */
+            border-radius: 2px;
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scrollWheel 1.6s infinite ease-in-out;
+        }
+
+        @keyframes scrollWheel {
+            0% {
+                top: 6px;
+                opacity: 1;
+            }
+            50% {
+                top: 14px;
+                opacity: 0.3;
+            }
+            100% {
+                top: 6px;
+                opacity: 1;
+            }
+        }
+
+        /* Contenedor del Scroll */
+        .zoom-scroll-container {
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 0 30px 30vh 30px;
+        }
+
+        /* Contenedor Sticky */
+        .card-wrapper {
+            position: sticky;
+            top: 15vh;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30vh;
+        }
+
+        /* Tarjeta Estilo Apple Premium */
+        .card {
+            background: rgba(28, 28, 30, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 50px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            
+            /* Animación de entrada basada en Scroll */
+            animation: appleZoom linear both;
+            animation-timeline: view();
+            animation-range: entry 0% exit 65%;
+        }
+
+        @keyframes appleZoom {
+            0% {
+                transform: scale(0.85) translateY(60px);
+                opacity: 0;
+            }
+            40% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Estilo del Párrafo (Alineado a la izquierda) */
+        .card p {
+            font-size: 1.15rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #e3e3e7;
+            text-align: left;
+        }
+
+        /* Resaltados */
+        .card p strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Subrayado sutil o etiquetas de conceptos */
+        .tech-highlight {
+            color: #10b981;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Instrucción Flotante Fija -->
+    <div class="floating-instruction">
+        <div class="mouse-icon">
+            <div class="mouse-wheel"></div>
+        </div>
+        <span>Haga scroll para ampliar la información</span>
+    </div>
+
+    <!-- Cabecera Centrada -->
+    <header class="intro-header">
+        <h1>Impacto del Big Data en<br>Actores Viales Vulnerables</h1>
+    </header>
+
+    <main class="zoom-scroll-container">
+
+        <!-- Tarjeta 1 - Peatones -->
+        <div class="card-wrapper">
+            <div class="card">
+                <p>El <span class="tech-highlight">Big Data</span> tiene un impacto transformador en los actores viales vulnerables, incluidos peatones, ciclistas y motociclistas, al proporcionar herramientas analíticas que permiten identificar riesgos específicos y desarrollar intervenciones focalizadas para mejorar su seguridad. Según <strong>(Aziz, et al., 2021)</strong>, el análisis de datos masivos provenientes de cámaras de tráfico, sensores en cruces peatonales y dispositivos portátiles ha demostrado ser eficaz para identificar patrones de comportamiento y áreas de alta incidencia de accidentes. Por ejemplo, uno de los hallazgos comunes es el tiempo insuficiente asignado en los semáforos para que los peatones crucen de manera segura, especialmente en zonas urbanas densamente pobladas. Este problema puede ser mitigado ajustando la sincronización de los semáforos o mediante la instalación de sistemas de alerta visual y acústica que adviertan tanto a peatones como a conductores sobre la proximidad de una intersección peligrosa.</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2 - Ciclistas -->
+        <div class="card-wrapper">
+            <div class="card">
+                <p>En el caso de los ciclistas, el análisis de <span class="tech-highlight">Big Data</span> puede revelar rutas con alto riesgo de colisión, como aquellas con carriles insuficientemente protegidos o áreas donde los vehículos tienden a invadir los espacios designados para bicicletas. Estos datos permiten a los planificadores urbanos rediseñar la infraestructura vial, incluyendo la creación de carriles exclusivos y separados para ciclistas, así como la implementación de señalización inteligente que priorice su paso en intersecciones concurridas <strong>(Buehler & Pucher, 2021)</strong>. Además, los sistemas inteligentes basados en datos pueden integrar alertas específicas para conductores que se acercan a zonas frecuentadas por ciclistas, reduciendo la probabilidad de accidentes en áreas compartidas.</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta 3 - Motociclistas -->
+        <div class="card-wrapper">
+            <div class="card">
+                <p>Por otro lado, los motociclistas, debido a su menor visibilidad en el tráfico y su exposición directa al entorno, se benefician significativamente de las tecnologías basadas en <span class="tech-highlight">Big Data</span>. Estudios recientes han destacado que los algoritmos de aprendizaje automático aplicados a datos de tráfico pueden predecir movimientos inesperados de vehículos y motocicletas en áreas de alta densidad, emitiendo alertas en tiempo real tanto para motociclistas como para conductores de vehículos más grandes <strong>(Litman, 2022)</strong>. Estos sistemas son particularmente útiles en entornos urbanos donde las condiciones de visibilidad son limitadas, como durante la noche o en zonas con curvas cerradas. Por ejemplo, los sensores integrados en infraestructuras urbanas, combinados con dispositivos conectados en motocicletas, pueden generar alertas específicas para evitar colisiones en tiempo real <strong>(Hussain, et al., 2020)</strong>.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="outro-footer" style="height: 40vh; display: flex; justify-content: center; align-items: center; color: #424245; font-size: 0.9rem;">
+        <p>Copyright © 2026 — Análisis de Datos y Movilidad Sostenible.</p>
+    </footer>
+
+</body>
+</html>
