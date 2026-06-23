@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movilidad y Ergonomía Cognitiva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #111112;
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --accent: #2997ff;
+            --border-color: #222224;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Contenedor Principal */
+        .carousel-container {
+            width: 100%;
+            max-width: 740px;
+            position: relative;
+        }
+
+        /* Instrucción Flotante Estilo Apple */
+        .floating-instruction {
+            position: absolute;
+            top: -45px;
+            right: 8px;
+            background: rgba(22, 22, 23, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .floating-instruction span {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Contenedor de Tarjetas */
+        .cards-wrapper {
+            position: relative;
+            width: 100%;
+            height: 480px;
+        }
+
+        /* Estilo de la Tarjeta */
+        .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            text-align: left;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        /* Tarjeta Activa */
+        .card.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Animación de entrada */
+        .card.active .card-tag,
+        .card.active .card-text,
+        .card.active .card-source {
+            animation: fadeInUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+
+        .card.active .card-tag { animation-delay: 0.1s; }
+        .card.active .card-text { animation-delay: 0.25s; }
+        .card.active .card-source { animation-delay: 0.4s; }
+
+        /* Elementos de la Tarjeta */
+        .card-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .card-text {
+            font-size: 1.15rem;
+            line-height: 1.75;
+            color: var(--text-primary);
+            font-weight: 300;
+            margin-top: 24px;
+            margin-bottom: auto;
+        }
+
+        .card-source {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-top: 24px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            width: 100%;
+        }
+
+        /* Controles Inferiores */
+        .controls-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 28px;
+            padding: 0 8px;
+        }
+
+        /* Indicadores (Dots) */
+        .indicators {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #333336;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--text-primary);
+            transform: scale(1.2);
+        }
+
+        /* Botones de Navegación */
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1;
+            user-select: none;
+            transition: background 0.3s, border-color 0.3s, opacity 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #1c1c1e;
+            border-color: #444446;
+        }
+
+        /* Estado deshabilitado (No infinito) */
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        /* Keyframes de animación */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .carousel-container {
+                margin-top: 40px;
+            }
+            .cards-wrapper {
+                height: 540px;
+            }
+            .card {
+                padding: 32px;
+            }
+            .card-text {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+            .floating-instruction {
+                top: -38px;
+                right: 0;
+                left: 0;
+                text-align: center;
+                margin: 0 auto;
+                width: max-content;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="carousel-container">
+        <div class="floating-instruction">
+            Haga clic sobre los botones <span>&lt;</span> y <span>&gt;</span>, para ver la información.
+        </div>
+
+        <div class="cards-wrapper">
+            
+            <div class="card active">
+                <span class="card-tag">Eficiencia Vial</span>
+                <p class="card-text">Las aplicaciones de movilidad ofrecen múltiples beneficios en la promoción de la seguridad vial y la eficiencia del tráfico. Una de sus mayores ventajas es la capacidad de proporcionar información en tiempo real sobre el estado del tráfico, lo que permite a los conductores ajustar sus rutas y evitar zonas de alto riesgo o congestionamiento. Por ejemplo, estudios han demostrado que el uso de aplicaciones como Waze puede reducir significativamente el tiempo de conducción en un 10-15 %, disminuyendo la fatiga del conductor y el riesgo asociado con errores humanos.</p>
+                <span class="card-source">Fuente: Ferreira & Pereira, 2017</span>
+            </div>
+
+            <div class="card">
+                <span class="card-tag">Sostenibilidad e Infraestructura</span>
+                <p class="card-text">Además, las aplicaciones de movilidad promueven modos de transporte sostenibles, como el uso compartido de bicicletas y scooters eléctricos. Estas iniciativas no solo reducen el número de vehículos en la carretera, sino que también fomentan una interacción más segura entre diferentes actores viales al minimizar las zonas de conflicto, como en carriles exclusivos para bicicletas. En este sentido, la recopilación y análisis de datos de tráfico derivados de estas aplicaciones permiten identificar patrones de riesgo y planificar intervenciones específicas, como la sincronización de semáforos o la reconfiguración de intersecciones peligrosas.</p>
+                <span class="card-source">Fuente: Shaheen, et al., 2016</span>
+            </div>
+
+            <div class="card">
+                <span class="card-tag">Enfoque HMI y Carga Mental</span>
+                <p class="card-text">A pesar de sus beneficios, el uso de estas aplicaciones no está exento de fallos y riesgos. Desde el enfoque HMI, se destaca que muchas de estas tecnologías no están diseñadas teniendo en cuenta los límites atencionales y cognitivos del usuario. Según el modelo de carga mental de Kahneman (1973), la interacción con aplicaciones móviles puede generar una sobrecarga cognitiva que afecta negativamente la capacidad del conductor para realizar tareas críticas, como mantener la trayectoria del vehículo o reaccionar ante frenadas imprevistas. Este problema es particularmente evidente en escenarios donde los conductores intentan manejar múltiples flujos de información simultáneamente, como seguir las indicaciones de navegación mientras responden una notificación.</p>
+                <span class="card-source">Fuente: Kahneman, 1973</span>
+            </div>
+
+            <div class="card">
+                <span class="card-tag">Ergonomía Cognitiva</span>
+                <p class="card-text">Otro fallo crítico identificado en investigaciones recientes es la falta de uniformidad en los diseños de las interfaces de usuario. Muchos sistemas no consideran principios básicos de ergonomía cognitiva, como minimizar la interacción manual o visual, lo que resulta en distractions peligrosas. Por ejemplo, mientras que algunas aplicaciones integran comandos de voz efectivos, otras requieren interacciones físicas frecuentes que aumentan el tiempo que el conductor desvía la atención de la carretera.</p>
+                <span class="card-source">Fuente: Young & Stanton, 2007</span>
+            </div>
+
+        </div>
+
+        <div class="controls-container">
+            <div class="indicators">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" aria-label="Tarjeta anterior" disabled>&lt;</button>
+                <button class="nav-btn" id="nextBtn" aria-label="Siguiente tarjeta">&gt;</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cards = document.querySelectorAll('.card');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        let currentIndex = 0;
+
+        function updateCarousel(index) {
+            cards[currentIndex].classList.remove('active');
+            dots[currentIndex].classList.remove('active');
+
+            currentIndex = index;
+
+            cards[currentIndex].classList.add('active');
+            dots[currentIndex].classList.add('active');
+
+            // Bloqueo estricto de extremos (No infinito)
+            prevBtn.disabled = (currentIndex === 0);
+            nextBtn.disabled = (currentIndex === cards.length - 1);
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < cards.length - 1) {
+                updateCarousel(currentIndex + 1);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                updateCarousel(currentIndex - 1);
+            }
+        });
+    </script>
+</body>
+</html>
