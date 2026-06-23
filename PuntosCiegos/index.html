@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrusel de Seguridad Vial y Puntos Muertos</title>
+    <style>
+        :root {
+            --bg-color: #050508;
+            --accent-blue: #00f2fe;
+            --accent-purple: #4facfe;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #e2e4e9;
+            --instruction-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1400px;
+            position: relative;
+        }
+
+        /* Instrucción Flotante Superior Derecha */
+        .instruction-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--instruction-bg);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            z-index: 20;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Fondo decorativo */
+        .bg-glow {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.04) 0%, rgba(79, 172, 254, 0.01) 50%, transparent 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Contenedor Principal Ajustado para las 3 Tarjetas */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 850px;
+            height: 560px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* Escenario de las Tarjetas */
+        .carousel-stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* Estilos de las Tarjetas */
+        .text-card {
+            position: absolute;
+            width: 100%;
+            max-width: 780px;
+            min-height: 380px;
+            padding: 3.5rem;
+            border-radius: 28px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: transform 0.85s cubic-bezier(0.25, 1, 0.5, 1),
+                        opacity 0.65s cubic-bezier(0.25, 1, 0.5, 1),
+                        border-color 0.4s ease,
+                        box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* CONFIGURACIÓN GEOMÉTRICA VERTICAL (Eje Y) */
+        
+        /* Estado: Activa (Centro) */
+        .text-card.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translate3d(0, 0, 0) scale(1);
+            z-index: 10;
+            border-color: rgba(0, 242, 254, 0.25);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5),
+                        0 0 50px rgba(0, 242, 254, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Estado: Siguiente (Abajo) */
+        .text-card.next {
+            opacity: 0.15;
+            visibility: visible;
+            transform: translate3d(0, 160px, -180px) rotateX(-12deg);
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        /* Estado: Anterior (Arriba) */
+        .text-card.prev {
+            opacity: 0.15;
+            visibility: visible;
+            transform: translate3d(0, -160px, -180px) rotateX(12deg);
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        /* Efecto Hover en tarjetas adyacentes */
+        .text-card.next:hover, .text-card.prev:hover {
+            opacity: 0.35;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Estilo del Párrafo Puro */
+        .text-card p {
+            font-size: 1.15rem;
+            line-height: 1.75;
+            color: var(--text-secondary);
+            text-align: left;
+            transform: translateZ(40px);
+            opacity: 0;
+            transition: opacity 0.5s ease 0.1s, transform 0.75s cubic-bezier(0.25, 1, 0.5, 1) 0.1s;
+        }
+
+        /* Disparadores de animación interna */
+        .text-card.active p {
+            opacity: 1;
+            transform: translateZ(0);
+        }
+
+        /* Controles de Navegación Lateral Derecha */
+        .controls-container {
+            position: absolute;
+            right: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.8rem;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.01);
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .nav-btn:not(:disabled):hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            color: var(--accent-blue);
+        }
+
+        /* Bloqueo Estricto en Extremos */
+        .nav-btn:disabled {
+            opacity: 0.12;
+            cursor: not-allowed;
+            border-color: var(--card-border);
+            color: var(--text-secondary);
+        }
+
+        .nav-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease;
+        }
+
+        .prev-btn:not(:disabled):hover svg { transform: translateY(-3px); }
+        .next-btn:not(:disabled):hover svg { transform: translateY(3px); }
+
+        /* Indicadores Activos */
+        .indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .dot.active {
+            height: 24px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        /* Adaptabilidad Responsiva */
+        @media (max-width: 950px) {
+            body {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding-top: 60px;
+            }
+            .carousel-container {
+                height: 520px;
+                max-width: 90%;
+            }
+            .text-card {
+                padding: 2.2rem 1.8rem;
+                min-height: 320px;
+            }
+            .text-card p { font-size: 1.05rem; line-height: 1.65; }
+            .controls-container {
+                position: relative;
+                right: auto;
+                flex-direction: row;
+                margin-top: 1.5rem;
+            }
+            .indicators { flex-direction: row; }
+            .dot.active { width: 24px; height: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="instruction-overlay">Haga clic sobre las flechas para navegar.</div>
+
+    <div class="carousel-container">
+        <div class="carousel-stage">
+            
+            <div class="text-card">
+                <p>Los puntos muertos no solo representan un riesgo para los motociclistas, sino también para peatones y ciclistas, particularmente en entornos urbanos densamente poblados. En many casos, los peatones y ciclistas se ubican en áreas de baja visibilidad alrededor de vehículos grandes, como camiones y autobuses, lo que aumenta significativamente la probabilidad de accidentes durante maniobras como giros o cambios de carril. Por ejemplo, los ciclistas que transitan por el costado derecho de un camión en una intersección suelen quedar fuera del campo de visión del conductor. Del mismo modo, un peatón que cruza fuera de los pasos peatonales establecidos podría ingresar inadvertidamente en la zona ciega de un vehículo en movimiento.</p>
+            </div>
+
+            <div class="text-card">
+                <p>Estudios recientes indican que una proporción considerable de los accidentes que involucran vehículos pesados y usuarios vulnerables, como peatones y ciclistas, se deben a errores de percepción del conductor en estas áreas críticas (Cookson, et al., 2011). Para abordar este problema, los ADAS han integrado sistemas de detección de usuarios vulnerables, que emplean cámaras de alta resolución y sensores de radar para monitorear continuamente las áreas circundantes del vehículo. Estos sistemas no solo identifican la presencia de peatones y ciclistas en tiempo real, sino que también emiten alertas al conductor y pueden activar el frenado automático en caso de riesgo inminente de colisión.</p>
+            </div>
+
+            <div class="text-card">
+                <p>Desde la perspectiva del factor humano, estas tecnologías deben complementarse con estrategias que promuevan una conducción consciente y defensiva. Por ejemplo, los programas educativos dirigidos a conductores deberían enfatizar la importancia de interpretar correctamente las alertas generadas por estos sistemas y de mantener un nivel constante de atención al entorno. De manera paralela, los peatones y ciclistas pueden ser parte activa de las soluciones mediante programas de concientización que fomenten comportamientos seguros. Esto incluye evitar detenerse en los puntos muertos de los vehículos, utilizar ropa reflectante y luces en horarios de baja visibilidad, y respetar las áreas designadas para el cruce y circulación.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="controls-container">
+        <button class="nav-btn prev-btn" aria-label="Subir">
+            <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+        <div class="indicators"></div>
+        <button class="nav-btn next-btn" aria-label="Bajar">
+            <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.text-card');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const indicatorsContainer = document.querySelector('.indicators');
+            
+            let currentIndex = 0;
+            const totalCards = cards.length;
+
+            cards.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(index));
+                indicatorsContainer.appendChild(dot);
+            });
+
+            const dots = document.querySelectorAll('.dot');
+
+            function updateCarousel() {
+                cards.forEach((card, index) => {
+                    card.classList.remove('active', 'next', 'prev');
+                    
+                    if (index === currentIndex) {
+                        card.classList.add('active');
+                    } else if (index === currentIndex + 1) {
+                        card.classList.add('next');
+                    } else if (index === currentIndex - 1) {
+                        card.classList.add('prev');
+                    }
+                });
+
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+
+                prevBtn.disabled = (currentIndex === 0);
+                nextBtn.disabled = (currentIndex === totalCards - 1);
+            }
+
+            function nextSlide() {
+                if (currentIndex < totalCards - 1) {
+                    currentIndex++;
+                    updateCarousel();
+                }
+            }
+
+            function prevSlide() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel();
+                }
+            }
+
+            function goToSlide(index) {
+                currentIndex = index;
+                updateCarousel();
+            }
+
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+
+            document.querySelector('.carousel-stage').addEventListener('click', (e) => {
+                const clickedCard = e.target.closest('.text-card');
+                if (!clickedCard) return;
+                
+                if (clickedCard.classList.contains('next')) nextSlide();
+                if (clickedCard.classList.contains('prev')) prevSlide();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') nextSlide();
+                if (e.key === 'ArrowUp') prevSlide();
+            });
+
+            updateCarousel();
+        });
+    </script>
+</body>
+</html>
