@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio de Repaso Final - Movilidad y Seguridad Vial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        :root {
+            --primary: #27728F;
+            --primary-dark: #1C546B;
+            --primary-light: #EBF1F4;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f9;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        #main-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 870px; 
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(39, 114, 143, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem 3.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #f1f1f1;
+        }
+
+        .text-custom { color: var(--primary); }
+        .bg-custom { background-color: var(--primary); }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 3.5rem;
+            border-radius: 99px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+        }
+        .btn-action:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(39, 114, 143, 0.3);
+        }
+
+        .option-card {
+            transition: all 0.2s ease;
+            border: 2px solid #f1f5f9;
+            cursor: pointer;
+        }
+        
+        .option-card.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .option-card.locked { pointer-events: none; }
+
+        .circle-bar { 
+            fill: none; 
+            stroke: var(--primary); 
+            stroke-width: 10; 
+            stroke-linecap: round; 
+            transition: stroke-dashoffset 1.5s ease-out;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="main-container">
+        
+        <!-- PANTALLA INICIAL -->
+        <div id="screen-start" class="scroll-content flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+            <span class="px-4 py-1.5 bg-[#27728F]/10 text-custom font-bold text-xs uppercase tracking-widest rounded-full mb-4">Evaluación de Cierre</span>
+            <h1 class="text-4xl font-bold text-custom mb-3 leading-tight">Ejercicio de Repaso Final</h1>
+            <p class="text-2xl mb-5 text-slate-600 font-semibold">Tecnología, Factor Humano e Infraestructura Inteligente</p>
+            <p class="mb-10 max-w-2xl text-slate-500 text-lg">Ha llegado el momento de consolidar tu aprendizaje. Esta evaluación final consta de 15 preguntas que pondrán a prueba tu capacidad de análisis crítico y resolución de casos de estudio del ecosistema vial moderno.</p>
+            <button onclick="startQuiz()" class="btn-action text-xl shadow-lg">COMENZAR EVALUACIÓN</button>
+        </div>
+
+        <!-- PANTALLA DE CUESTIONARIO -->
+        <div id="screen-quiz" class="hidden flex flex-col h-full">
+            <div class="px-14 pt-8 flex justify-between items-center bg-white z-10">
+                <span id="q-number" class="font-bold text-custom text-sm tracking-widest uppercase"></span>
+                <div class="w-48 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div id="progress-fill" class="h-full bg-custom transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="scroll-content animate__animated animate__fadeIn" id="quiz-body">
+                <p id="q-instruction" class="text-custom font-bold italic mb-2 text-base"></p>
+                
+                <!-- Caja de Contexto o Caso -->
+                <div id="case-box" class="hidden mb-5 p-5 bg-amber-50/60 border-l-4 border-amber-500 text-slate-700 text-base rounded-r-2xl shadow-sm animate__animated animate__fadeIn">
+                    <div class="flex items-center space-x-2 text-amber-800 font-bold mb-1.5">
+                        <span>📋</span>
+                        <span class="text-sm tracking-wide uppercase">Caso de Estudio Aplicado</span>
+                    </div>
+                    <p id="case-text" class="italic leading-relaxed"></p>
+                </div>
+                
+                <!-- Enunciado de la Pregunta -->
+                <div id="question-text-container" class="mb-6 leading-relaxed text-slate-800">
+                    <h2 id="q-text" class="text-lg font-semibold leading-snug text-slate-800 border-l-4 border-[#27728F] pl-4 py-1 bg-slate-50"></h2>
+                </div>
+
+                <!-- Contenedor para Opción Múltiple / VF -->
+                <div id="options-container" class="space-y-3"></div>
+
+                <!-- Alerta Flotante Interna de Validación -->
+                <div id="warning-box" class="hidden mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-medium text-sm flex items-center justify-center animate__animated animate__shakeX">
+                    ⚠️ Por favor, responde la pregunta seleccionando una opción antes de validar.
+                </div>
+
+                <!-- Caja de Retroalimentación -->
+                <div id="feedback-box" class="hidden mt-6 p-5 rounded-2xl border-2 animate__animated animate__fadeInUp text-base">
+                    <p id="feedback-title" class="font-bold text-lg mb-1"></p>
+                    <div id="feedback-body" class="leading-relaxed text-slate-700"></div>
+                    <button id="btn-continue" onclick="nextStep()" class="mt-4 bg-slate-800 text-white px-8 py-2 rounded-xl hover:bg-black transition-all font-bold text-sm">Continuar</button>
+                </div>
+
+                <button id="btn-validate" onclick="validateAnswer()" class="btn-action w-full mt-6 shadow-xl text-lg">Validar Respuesta</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS -->
+        <div id="screen-results" class="hidden scroll-content flex flex-col items-center">
+            <h2 class="text-4xl font-bold mb-2 text-custom text-center">Evaluación Finalizada</h2>
+            
+            <div class="flex flex-col items-center justify-center my-4">
+                <div class="relative flex items-center justify-center">
+                    <svg class="w-56 h-56 -rotate-90">
+                        <circle cx="112" cy="112" r="95" stroke="#f1f5f9" stroke-width="10" fill="none"></circle>
+                        <circle id="final-circle" cx="112" cy="112" r="95" class="circle-bar" stroke-dasharray="596" stroke-dashoffset="596"></circle>
+                    </svg>
+                    <div class="absolute text-5xl font-black text-slate-800"><span id="result-percent">0</span>%</div>
+                </div>
+            </div>
+
+            <p id="result-score" class="text-xl font-bold mb-4 text-slate-700 text-center"></p>
+            <div id="result-msg" class="w-full max-w-2xl mb-6 p-5 bg-slate-50 rounded-2xl italic text-slate-600 text-base text-center"></div>
+            
+            <button onclick="location.reload()" class="btn-action mb-8">Reiniciar Repaso Final</button>
+
+            <!-- Contenedor del compilado detallado de preguntas y correcciones -->
+            <div class="w-full max-w-3xl border-t border-slate-200 pt-8 mt-4 text-left">
+                <h3 class="text-2xl font-bold text-custom mb-6 text-center">Revisión académica detallada</h3>
+                <div id="summary-cards" class="space-y-6">
+                    <!-- Se genera dinámicamente desde JavaScript -->
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="btn-action mt-10 mb-6">Reiniciar Repaso Final</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                type: "ms",
+                instruction: "Seleccione la respuesta correcta",
+                question: "1. ¿Cómo puede la combinación de ADAS y Big Data mejorar la seguridad de ciclistas y peatones?",
+                options: [
+                    {t: "a) Los ADAS reemplazan completamente la atención del conductor y el Big Data elimina la necesidad de señalización vial.", c: false},
+                    {t: "b) El Big Data controla directamente los vehículos y los ADAS únicamente registran información estadística.", c: false},
+                    {t: "c) Los ADAS detectan usuarios vulnerables en tiempo real y el Big Data permite identificar zonas de riesgo para mejorar la infraestructura.", c: true},
+                    {t: "d) Ambas tecnologías reducen la velocidad de todos los vehículos sin analizar las condiciones del entorno.", c: false}
+                ],
+                feedback: "La integración de tecnologías de asistencia y análisis de datos permite anticipar riesgos y fortalecer la protección de los usuarios más vulnerables en las vías."
+            },
+            {
+                type: "ms",
+                instruction: "Seleccione la respuesta correcta",
+                question: "2. ¿Qué efecto puede tener la automatización frágil sobre la conciencia situacional del conductor?",
+                options: [
+                    {t: "a) Favorece una atención más constante del entorno vial en situaciones de emergencia.", c: false},
+                    {t: "b) Reduce la atención activa del conductor y dificulta la recuperación del control ante imprevistos.", c: true},
+                    {t: "c) Elimina la necesidad de supervisar el funcionamiento de los sistemas ADAS.", c: false},
+                    {t: "d) Incrementa automáticamente la capacidad de reacción del conductor.", c: false}
+                ],
+                feedback: "La dependencia excesiva de sistemas automatizados puede disminuir la capacidad del conductor para percibir y responder oportunamente a cambios inesperados en el entorno vial."
+            },
+            {
+                type: "ms",
+                instruction: "Seleccione la respuesta correcta",
+                question: "3. ¿Cuál de las siguientes estrategias educativas promueve un uso responsable de aplicaciones de movilidad durante la conducción?",
+                options: [
+                    {t: "a) Realizar talleres prácticos que enseñen el uso de comandos de voz y pausas seguras para evitar manipular pantallas al conducir.", c: true},
+                    {t: "b) Incentivar el uso continuo de pantallas táctiles para mejorar la rapidez de interacción del conductor.", c: false},
+                    {t: "c) Permitir que los conductores respondan notificaciones mientras el vehículo está en movimiento.", c: false},
+                    {t: "d) Priorizar la velocidad de respuesta sobre la atención al entorno vial.", c: false}
+                ],
+                feedback: "Las estrategias educativas deben fomentar hábitos de conducción seguros y reducir las distracciones asociadas al uso de dispositivos tecnológicos."
+            },
+            {
+                type: "vf",
+                instruction: "Seleccione Verdadero o Falso",
+                question: "4. La infraestructura inteligente puede mejorar la seguridad entre vehículos autónomos y peatones mediante tecnologías como semáforos adaptativos y sistemas V2I que alertan sobre posibles riesgos.",
+                options: [
+                    {t: "Verdadero", c: true},
+                    {t: "Falso", c: false}
+                ],
+                feedback: "La integración de sistemas inteligentes permite anticipar interacciones peligrosas y fortalecer la seguridad de todos los actores viales en entornos urbanos."
+            },
+            {
+                type: "vf",
+                instruction: "Seleccione Verdadero o Falso",
+                question: "5. La integración de la psicología del tránsito con la innovación tecnológica permite desarrollar sistemas de movilidad más seguros y centrados en las capacidades y limitaciones del usuario.",
+                options: [
+                    {t: "Verdadero", c: true},
+                    {t: "Falso", c: false}
+                ],
+                feedback: "El análisis de factores humanos como la atención, percepción y toma de decisiones contribuye al diseño de tecnologías viales más seguras y eficientes."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "Juan conduce un automóvil con control de crucero adaptativo en una autopista. Se siente confiado y decide distraerse mirando su celular, mientras el sistema mantiene la velocidad. De repente, un camión frena bruscamente adelante.",
+                question: "6. ¿Qué riesgo representa la automatización frágil en esta situación?",
+                options: [
+                    {t: "a) El control de crucero adaptativo reemplaza completamente la necesidad de supervisión humana.", c: false},
+                    {t: "b) El sistema impide que el conductor pueda reaccionar ante cualquier emergencia.", c: false},
+                    {t: "c) El vehículo aumenta automáticamente la velocidad al detectar un obstáculo.", c: false},
+                    {t: "d) El conductor pierde atención al confiar excesivamente en el sistema automatizado.", c: true}
+                ],
+                feedback: "La dependencia excesiva de sistemas automatizados puede disminuir la vigilancia del conductor y retrasar la reacción ante eventos inesperados en la vía."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "Un conductor de tractocamión lleva más de 10 horas en carretera. Su vehículo cuenta con sensores de parpadeo que le sugieren detenerse, pero ignora la alerta.",
+                question: "7. ¿Qué factor humano se ve comprometido en esta situación?",
+                options: [
+                    {t: "a) La capacidad de reacción del conductor debido a la fatiga acumulada.", c: true},
+                    {t: "b) La estabilidad mecánica del tractocamión por exceso de velocidad.", c: false},
+                    {t: "c) La conectividad del sistema de monitoreo del vehículo.", c: false},
+                    {t: "d) La visibilidad del conductor causada por las condiciones climáticas.", c: false}
+                ],
+                feedback: "La fatiga prolongada disminuye el estado de alerta y aumenta el riesgo de errores o episodios de microsueño durante la conducción."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "En un cruce ferroviario sin barreras, un ciclista distraído con auriculares cruza sin mirar, mientras un tren se aproxima.",
+                question: "8. ¿Qué error de percepción se presenta en esta situación?",
+                options: [
+                    {t: "a) Exceso de confianza en sistemas automatizados del cruce férreo.", c: false},
+                    {t: "b) Distracción auditiva y pérdida de conciencia situacional.", c: true},
+                    {t: "c) Fallo mecánico en el sistema de frenos de la bicicleta.", c: false},
+                    {t: "d) Alteración de la percepción visual por exceso de velocidad del tren.", c: false}
+                ],
+                feedback: "La atención dividida por el uso de auriculares puede limitar la percepción de señales del entorno y aumentar el riesgo en cruces ferroviarios."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "Una motocicleta circula paralela a un bus urbano en un corredor vial congestionado. El bus enciende direccionales para cambiar de carril.",
+                question: "9. ¿Qué maniobra debe evitar el motociclista en esta situación?",
+                options: [
+                    {t: "a) Reducir la velocidad al observar las direccionales del bus.", c: false},
+                    {t: "b) Mantener distancia lateral con el vehículo pesado.", c: false},
+                    {t: "c) Permanecer durante mucho tiempo en el punto ciego del bus.", c: true},
+                    {t: "d) Anticipar posibles cambios de carril del bus urbano.", c: false}
+                ],
+                feedback: "La conducción defensiva permite anticipar maniobras de otros vehículos y disminuir el riesgo de colisiones en zonas de baja visibilidad."
+            },
+            {
+                type: "vf",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "En un paso peatonal inteligente con luces en el pavimento, un grupo de jóvenes cruza mirando su celular.",
+                question: "10. La infraestructura inteligente en pasos peatonales elimina la necesidad de que los peatones mantengan atención activa al cruzar la vía.",
+                options: [
+                    {t: "Verdadero", c: false},
+                    {t: "Falso", c: true}
+                ],
+                feedback: "Aunque las señales inteligentes ayudan a reducir riesgos, la seguridad vial también depende de la atención y comportamiento responsable de los peatones."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "Un niño corre detrás de una pelota hacia la calle en una zona residencial. El vehículo que se aproxima tiene sistema de frenado automático.",
+                question: "11. ¿Qué papel cumple el sistema ADAS en esta situación?",
+                options: [
+                    {t: "a) Sustituye completamente la necesidad de conducir a velocidad moderada en zonas residenciales.", c: false},
+                    {t: "b) Permite que el conductor ignore el entorno mientras el sistema controla el vehículo.", c: false},
+                    {t: "c) Incrementa la velocidad de reacción del peatón ante el peligro.", c: false},
+                    {t: "d) Detecta al peatón y puede activar el frenado automático para reducir el riesgo de atropello.", c: true}
+                ],
+                feedback: "Los sistemas de asistencia pueden ayudar a prevenir siniestros en situaciones inesperadas, especialmente en entornos con alta presencia de peatones vulnerables."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "En una intersección con semáforo sonoro, una persona con discapacidad visual espera cruzar. El sistema emite señales auditivas, pero un conductor distraído ignora la luz roja.",
+                question: "12. ¿Qué combinación de factores falla en esta situación?",
+                options: [
+                    {t: "a) La distracción del conductor y el incumplimiento de la señalización vial.", c: true},
+                    {t: "b) El funcionamiento del semáforo sonoro y la velocidad del peatón.", c: false},
+                    {t: "c) La capacidad auditiva de la persona con discapacidad visual y el estado del pavimento.", c: false},
+                    {t: "d) El diseño de la intersección y la iluminación ambiental.", c: false}
+                ],
+                feedback: "La infraestructura inclusiva mejora la seguridad vial, pero su efectividad depende también del comportamiento responsable y la atención de los conductores."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "Un ciclista circula por un carril exclusivo, pero un bus invade la vía para adelantar más rápido.",
+                question: "13. ¿Qué principio de infraestructura adaptada se está vulnerando en esta situación?",
+                options: [
+                    {t: "a) La separación física entre diferentes actores viales.", c: true},
+                    {t: "b) La sincronización de semáforos inteligentes en corredores urbanos.", c: false},
+                    {t: "c) La automatización del transporte público colectivo.", c: false},
+                    {t: "d) La priorización de velocidad sobre movilidad sostenible.", c: false}
+                ],
+                feedback: "Los carriles exclusivos buscan disminuir conflictos entre actores viales y reducir el riesgo de colisiones en espacios compartidos."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "Un vehículo autónomo se detiene en un cruce sin semáforo al detectar peatones. Estos dudan en cruzar porque no hay contacto visual con el “conductor”.",
+                question: "14. ¿Qué solución tecnológica puede mejorar la interacción entre peatones y vehículos autónomos en esta situación?",
+                options: [
+                    {t: "a) Incrementar la velocidad de respuesta del vehículo en los cruces peatonales.", c: false},
+                    {t: "b) Sistemas de comunicación externa como luces, pantallas LED o señales acústicas.", c: true},
+                    {t: "c) Eliminar completamente los cruces sin semáforo en zonas urbanas.", c: false},
+                    {t: "d) Reducir la detección automática de peatones para evitar detenciones frecuentes.", c: false}
+                ],
+                feedback: "La comunicación visual y auditiva ayuda a generar confianza y facilita la comprensión de las intenciones del vehículo por parte de los peatones."
+            },
+            {
+                type: "ms",
+                instruction: "Caso práctico - Analice la situación y seleccione",
+                case: "En una intersección concurrida confluyen autos, motocicletas, bicicletas y peatones, mientras un camión distribuidor bloquea parcialmente la visibilidad.",
+                question: "15. ¿Qué estrategias integradas ayudan a reducir riesgos en este tipo de intersecciones urbanas?",
+                options: [
+                    {t: "a) Incrementar la velocidad de circulación para disminuir la congestión vehicular.", c: false},
+                    {t: "b) Implementar semáforos adaptativos, carriles exclusivos, control de velocidad y educación vial.", c: true},
+                    {t: "c) Permitir que cada actor vial circule sin restricciones de infraestructura.", c: false},
+                    {t: "d) Reducir la señalización para evitar distracciones en la vía.", c: false}
+                ],
+                feedback: "La seguridad vial en entornos urbanos complejos requiere combinar infraestructura adecuada, tecnologías inteligentes y formación ciudadana."
+            }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        const totalPoints = quizData.length;
+
+        function startQuiz() {
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = quizData[currentIdx];
+            
+            document.getElementById('q-number').innerText = `PREGUNTA ${currentIdx + 1}/${quizData.length}`;
+            document.getElementById('progress-fill').style.width = `${((currentIdx + 1)/quizData.length)*100}%`;
+            document.getElementById('q-instruction').innerText = q.instruction;
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('warning-box').classList.add('hidden');
+            document.getElementById('btn-validate').classList.remove('hidden');
+
+            const caseBox = document.getElementById('case-box');
+            if (q.case) {
+                document.getElementById('case-text').innerText = q.case;
+                caseBox.classList.remove('hidden');
+            } else {
+                caseBox.classList.add('hidden');
+            }
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.className = "space-y-3";
+            document.getElementById('q-text').innerText = q.question;
+            setupSelectionOptions(q, optContainer);
+        }
+
+        function setupSelectionOptions(q, container) {
+            container.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const d = document.createElement('div');
+                d.className = "option-card flex items-center p-4 rounded-xl mb-2 text-base";
+                d.innerHTML = `
+                    <input type="radio" name="ans" id="o${i}" value="${i}" class="w-5 h-5 accent-[#27728F]">
+                    <label for="o${i}" class="ml-4 w-full cursor-pointer font-medium text-slate-700">${opt.t}</label>
+                `;
+                d.onclick = () => {
+                    document.getElementById('warning-box').classList.add('hidden');
+                    document.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
+                    d.classList.add('selected');
+                    d.querySelector('input').checked = true;
+                };
+                container.appendChild(d);
+            });
+        }
+
+        function validateAnswer() {
+            const q = quizData[currentIdx];
+            let isCorrect = true;
+
+            const selectedInput = document.querySelector('input[name="ans"]:checked');
+            if (!selectedInput) {
+                document.getElementById('warning-box').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('warning-box').classList.add('hidden');
+            
+            const chosenVal = parseInt(selectedInput.value);
+            q.userAnswer = chosenVal; 
+
+            isCorrect = q.options[chosenVal].c;
+            if (isCorrect) {
+                score++;
+            }
+
+            document.querySelectorAll('.option-card').forEach(el => el.classList.add('locked'));
+
+            const fBox = document.getElementById('feedback-box');
+            fBox.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'bg-red-50', 'border-red-200');
+            document.getElementById('btn-validate').classList.add('hidden');
+
+            const fTitle = document.getElementById('feedback-title');
+            if (isCorrect) {
+                fTitle.innerText = "¡Correcto!";
+                fTitle.className = "font-bold text-lg text-green-700";
+                fBox.classList.add('bg-green-50', 'border-green-200');
+            } else {
+                fTitle.innerText = "Incorrecto";
+                fTitle.className = "font-bold text-lg text-red-700";
+                fBox.classList.add('bg-red-50', 'border-red-200');
+            }
+
+            document.getElementById('feedback-body').innerHTML = `<strong>Realimentación:</strong> ${q.feedback}`;
+        }
+
+        function nextStep() {
+            currentIdx++;
+            if (currentIdx < quizData.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+            
+            const percent = Math.round((score / totalPoints) * 100);
+            const circumference = 596;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    document.getElementById('final-circle').style.strokeDashoffset = offset;
+                }, 50);
+            });
+            
+            let count = 0;
+            const timer = setInterval(() => {
+                if (count >= percent) {
+                    document.getElementById('result-percent').innerText = percent;
+                    clearInterval(timer);
+                } else {
+                    count++;
+                    document.getElementById('result-percent').innerText = count;
+                }
+            }, 15);
+
+            document.getElementById('result-score').innerText = `Puntaje Final: ${score} de ${totalPoints} puntos`;
+            const msg = document.getElementById('result-msg');
+            
+            if (percent === 100) {
+                msg.innerText = "¡Excelente! Has completado el repaso final con una puntuación perfecta. Demuestras un dominio excepcional de las interacciones tecnológicas, la mitigación de los errores humanos, la psicología del tránsito y el rol crítico de las infraestructuras inteligentes.";
+            } else if (percent >= 70) {
+                msg.innerText = "¡Muy buen trabajo! Has demostrado una comprensión sólida de los contenidos y habilidades analíticas para resolver con éxito los casos prácticos planteados.";
+            } else {
+                msg.innerText = "Te sugerimos realizar una nueva lectura de los contenidos del curso, haciendo especial énfasis en la automatización frágil, la gestión preventiva del cansancio/fatiga y los puntos ciegos en vehículos de gran escala.";
+            }
+
+            buildSummaryCards();
+        }
+
+        function buildSummaryCards() {
+            const container = document.getElementById('summary-cards');
+            container.innerHTML = '';
+
+            quizData.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = "p-6 rounded-2xl border-l-8 bg-slate-50 shadow-sm transition-all duration-300 animate__animated animate__fadeInUp";
+                
+                let isFullyCorrect = false;
+                let statusBadge = '';
+                let userValHTML = '';
+                let correctValHTML = '';
+
+                const userAnsIdx = q.userAnswer;
+                const correctAnsIdx = q.options.findIndex(o => o.c);
+                isFullyCorrect = (userAnsIdx === correctAnsIdx);
+
+                if (isFullyCorrect) {
+                    card.classList.add('border-green-500');
+                    statusBadge = '<span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">Correcto</span>';
+                    userValHTML = `<span class="text-green-700 font-medium">${q.options[userAnsIdx].t}</span>`;
+                } else {
+                    card.classList.add('border-red-500');
+                    statusBadge = '<span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full">Incorrecto</span>';
+                    userValHTML = `<span class="text-red-600 font-semibold">${userAnsIdx !== undefined && userAnsIdx !== null ? q.options[userAnsIdx].t : '[Sin responder]'}</span>`;
+                    correctValHTML = `
+                        <div class="text-sm mt-1">
+                            <span class="font-semibold text-slate-500">Respuesta correcta esperada:</span> 
+                            <span class="text-green-700 font-medium">${q.options[correctAnsIdx].t}</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-bold text-slate-400 uppercase tracking-wider">Pregunta ${idx + 1}</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="font-semibold text-slate-800 mb-3 text-base">${q.question}</div>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 space-y-1.5 mb-3 shadow-inner">
+                        <div class="text-sm"><span class="font-semibold text-slate-600">Tu respuesta:</span> ${userValHTML}</div>
+                        ${correctValHTML}
+                    </div>
+                    
+                    <div class="text-sm text-slate-600 bg-slate-100 p-3 rounded-xl border border-slate-200">
+                        <strong class="text-custom">Explicación académica:</strong> ${q.feedback}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
