@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatización y Vehículos Autónomos</title>
+    <!-- Importación de Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos Base - Estilo Apple Dark */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #000000; /* Negro puro de Apple */
+            color: #f5f5f7; /* Blanco roto de Apple */
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Encabezado Centrado Estilo Apple Hero */
+        .intro-header {
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .intro-header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        /* Instrucción Flotante Fija (Siempre visible) */
+        .floating-instruction {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background: rgba(22, 22, 23, 0.6); /* SF Compact background */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            pointer-events: none; /* No interfiere con los clics del usuario */
+        }
+
+        .floating-instruction span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: #a1a1a6;
+            text-transform: uppercase;
+        }
+
+        /* Icono del Mouse de Apple con Animación de Rueda */
+        .mouse-icon {
+            width: 22px;
+            height: 36px;
+            border: 2px solid #ffffff;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .mouse-wheel {
+            width: 4px;
+            height: 8px;
+            background-color: #3b82f6; /* Detalle azul tecnológico */
+            border-radius: 2px;
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scrollWheel 1.6s infinite ease-in-out;
+        }
+
+        @keyframes scrollWheel {
+            0% {
+                top: 6px;
+                opacity: 1;
+            }
+            50% {
+                top: 14px;
+                opacity: 0.3;
+            }
+            100% {
+                top: 6px;
+                opacity: 1;
+            }
+        }
+
+        /* Contenedor del Scroll */
+        .zoom-scroll-container {
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 0 30px 30vh 30px;
+        }
+
+        /* Contenedor Sticky */
+        .card-wrapper {
+            position: sticky;
+            top: 15vh;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30vh;
+        }
+
+        /* Tarjeta Estilo Apple Premium (Glassmorphism sutil) */
+        .card {
+            background: rgba(28, 28, 30, 0.7); /* Gris oscuro característico de macOS */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 50px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            
+            /* Animación de entrada basada en Scroll */
+            animation: appleZoom linear both;
+            animation-timeline: view();
+            animation-range: entry 0% exit 65%;
+        }
+
+        @keyframes appleZoom {
+            0% {
+                transform: scale(0.85) translateY(60px);
+                opacity: 0;
+            }
+            40% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Estilo del Párrafo (Alineado a la izquierda) */
+        .card p {
+            font-size: 1.15rem;
+            font-weight: 300; /* Peso ligero elegante */
+            line-height: 1.8;
+            color: #e3e3e7;
+            text-align: left;
+        }
+
+        /* Resaltados */
+        .card p strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .figure-ref {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Footer final */
+        .outro-footer {
+            height: 40vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #424245;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Instrucción Flotante Fija -->
+    <div class="floating-instruction">
+        <div class="mouse-icon">
+            <div class="mouse-wheel"></div>
+        </div>
+        <span>Haga scroll para ampliar la información</span>
+    </div>
+
+    <!-- Cabecera Centrada -->
+    <header class="intro-header">
+        <h1>Automatización y<br>Vehículos Autónomos</h1>
+    </header>
+
+    <main class="zoom-scroll-container">
+
+        <!-- Tarjeta 1 -->
+        <div class="card-wrapper">
+            <div class="card">
+                <p>Desde un punto de vista teórico, los vehículos autónomos representan una forma avanzada de automatización aplicada, un conceptp explorado en profundidad en el modelo de "confianza y automatización" propuesto por <strong>(Lee & See, 2004)</strong>. Este modelo establece que el éxito de los sistemas autónomos depende de un equilibrio adecuado en la confianza del usuario hacia la tecnología. Una confianza insuficiente puede llevar al rechazo del sistema, mientras que una confianza excesiva puede derivar en la delegación total de la responsabilidad, un fenómeno conocido como "automatización frágil" <strong>(Parasuraman & Riley, 1997)</strong>. Este fenómeno es especialmente relevante en vehículos autónomos que operan en niveles intermedios de automatización, donde se espera que el conductor permanezca atento y preparado para retomar el control en situaciones críticas <span class="figure-ref">ver Figura 6</span>.</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2 -->
+        <div class="card-wrapper">
+            <div class="card">
+                <p>Uno de los retos asociados con los vehículos autónomos es la interacción entre la tecnología y los usuarios, tanto conductores como otros actores viales. La automatización no elimina por completo la necesidad de supervisión humana, especialmente en los niveles 2 y 3 de automatización según la clasificación de la <strong>(SAE, 2018)</strong>. En estos niveles, aunque el sistema puede manejar tareas de conducción específicas, el conductor sigue siendo responsable de monitorear el entorno y estar preparado para intervenir. La sobreconfianza en los sistemas autónomos, descrita en el modelo de automatización frágil, puede llevar a una disminución de la atención del conductor y a lapsos en la conciencia situacional, definida como la percepción y comprensión del entorno en un momento determinado <strong>(Endsley, 1995)</strong>. Por ejemplo, en situaciones donde un sensor no detecta un obstáculo debido a condiciones ambientales adversas, como niebla o lluvia intensa, el tiempo de reacción del conductor para intervenir puede ser insuficiente, aumentando el riesgo de accidentes. Este problema destaca la necesidad de sistemas redundantes y mecanismos de alerta que mantengan al usuario involucrado en la conducción, incluso cuando el sistema está operativo.</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta 3 -->
+        <div class="card-wrapper">
+            <div class="card">
+                <p>En un entorno vial tradicional, los conductores humanos dependen de señales no verbales, como el contacto visual, gestos o el movimiento del vehículo, para comunicarse con peatones, ciclistas y otros conductores. Sin embargo, los vehículos autónomos carecen de esta capacidad innata, lo que puede generar incertidumbre en otros usuarios de la vía. Estudios como los de <strong>(Dey, et al., 2020)</strong> han explorado la implementación de sistemas de comunicación externa en vehículos autónomos, como pantallas LED y señales acústicas, para transmitir intenciones como detenerse, girar o ceder el paso. Estas soluciones buscan replicar la interacción no verbal que facilita la toma de decisiones en entornos compartidos. Un ejemplo práctico es el sistema desarrollado por Waymo, que utiliza luces y mensajes externos para indicar a los peatones si es seguro cruzar frente al vehículo <strong>(Waymo, 2022)</strong>. Estas tecnologías son fundamentales para evitar malentendidos que puedan resultar en accidentes, especialmente en intersecciones urbanas densamente pobladas, donde peatones y ciclistas interactúan frecuentemente con vehículos.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="outro-footer">
+        <p>Copyright © 2026 — Documentación Técnica.</p>
+    </footer>
+
+</body>
+</html>
